@@ -8,32 +8,59 @@ from deform_conv.deform_conv import tf_batch_map_offsets
 
 
 class ConvOffset2D(Conv2D):
-    """ConvOffset2D"""
+    """ConvOffset2D
+
+    Convolutional layer responsible for learning the 2D offsets and output the
+    deformed feature map using bilinear interpolation
+
+    Note that this layer does not perform convolution on the deformed feature
+    map. See get_deform_cnn in cnn.py for usage
+    """
 
     def __init__(self, filters, init_normal_stddev=0.01, **kwargs):
-        """Init"""
+        """Init
+
+        Parameters
+        ----------
+        filters : int
+            Number of channel of the input feature map
+        init_normal_stddev : float
+            Normal kernel initialization
+        **kwargs:
+            Pass to superclass. See Con2D layer in Keras
+        """
 
         self.filters = filters
         super(ConvOffset2D, self).__init__(
             self.filters * 2, (3, 3), padding='same', use_bias=False,
-            # TODO gradients are near zero if init is zeros
-            kernel_initializer='zeros',
-            # kernel_initializer=RandomNormal(0, init_normal_stddev),
+            kernel_initializer=RandomNormal(0, init_normal_stddev),
             **kwargs
         )
 
     def call(self, x):
-        # TODO offsets probably have no nonlinearity?
+        """Return the deformed featured map"""
         x_shape = x.get_shape()
         offsets = super(ConvOffset2D, self).call(x)
 
+        # offsets: (b*c, h, w, 2)
         offsets = self._to_bc_h_w_2(offsets, x_shape)
+
+        # x: (b*c, h, w)
         x = self._to_bc_h_w(x, x_shape)
+
+        # X_offset: (b*c, h, w)
         x_offset = tf_batch_map_offsets(x, offsets)
+
+        # x_offset: (b, h, w, c)
         x_offset = self._to_b_h_w_c(x_offset, x_shape)
+
         return x_offset
 
     def compute_output_shape(self, input_shape):
+        """Output shape is the same as input shape
+
+        Because this layer does only the deformation part
+        """
         return input_shape
 
     @staticmethod

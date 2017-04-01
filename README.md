@@ -48,4 +48,6 @@ Please refer to `scripts/scaled_mnist.py` for reproducing this result.
 - This implementation also does not take advantage of the fact that offsets and
   the input have similar shape (in `tf_batch_map_offsets`). (So STN-style
   bilinear sampling will help)
-- The TensorFlow Keras backend must be used
+- The TensorFlow Keras backend must be used (channel-last)
+- You can check ensure the TensorFlow implementation is equivalent to its scipy
+  counterpart by running unit tests (e.g. `py.test -x -v --pdb`)

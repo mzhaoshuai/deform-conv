@@ -80,6 +80,10 @@ def tf_batch_map_coordinates(input, coords, order=1):
     ----------
     input : tf.Tensor. shape = (b, s, s)
     coords : tf.Tensor. shape = (b, n_points, 2)
+
+    Returns
+    -------
+    tf.Tensor. shape = (b, s, s)
     """
 
     input_shape = tf.shape(input)
@@ -139,6 +143,10 @@ def tf_batch_map_offsets(input, offsets, order=1):
     ---------
     input : tf.Tensor. shape = (b, s, s)
     offsets: tf.Tensor. shape = (b, s, s, 2)
+
+    Returns
+    -------
+    tf.Tensor. shape = (b, s, s)
     """
 
     input_shape = tf.shape(input)
