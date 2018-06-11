@@ -66,7 +66,8 @@ class ConvOffset2D(Conv2D):
     @staticmethod
     def _to_bc_h_w_2(x, x_shape):
         """(b, h, w, 2c) -> (b*c, h, w, 2)"""
-        x = tf.transpose(x, [0, 3, 1, 2])
+        x = tf.reshape(x, (x_shape[0], x_shape[1], x_shape[2], -1, 2))
+        x = tf.transpose(x, [0, 3, 1, 2, 4])
         x = tf.reshape(x, (-1, int(x_shape[1]), int(x_shape[2]), 2))
         return x
 
